@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Collections.Concurrent;
 using System.IO;
 
+//Pablo González Rubio - 28/12/2016
 namespace UF2Practica1
 {
 	class MainClass
@@ -12,15 +13,15 @@ namespace UF2Practica1
 		//Valors constants
 		#region Constants
 		const int nCaixeres = 3;
-
-		#endregion
-		/* Cua concurrent
+        #endregion
+        /* Cua concurrent
 		 	Dos mètodes bàsics: 
 		 		Cua.Enqueue per afegir a la cua
+                  \\Don't try to copy me! ;D\\
 		 		bool success = Cua.TryDequeue(out clientActual) per extreure de la cua i posar a clientActual
 		*/
 
-		public static ConcurrentQueue<Client> cua = new ConcurrentQueue<Client>();
+        public static ConcurrentQueue<Client> cua = new ConcurrentQueue<Client>();
 
 		public static void Main(string[] args)
 		{
@@ -57,9 +58,14 @@ namespace UF2Practica1
 
 
 			// Instanciar les caixeres i afegir el thread creat a la llista de threads
+            for(var i = 0; i < nCaixeres; i++)
+            {
+                var caixera = new Caixera(i);
+                var thread = new Thread(() => caixera.ProcessarCua());
 
-
-
+                thread.Start();
+                threads.Add(thread);
+            }
 
 			// Procediment per esperar que acabin tots els threads abans d'acabar
 			foreach (Thread thread in threads)
@@ -68,7 +74,7 @@ namespace UF2Practica1
 			// Parem el rellotge i mostrem el temps que triga
 			clock.Stop();
 			double temps = clock.ElapsedMilliseconds / 1000;
-			Console.Clear();
+			//Console.Clear();
 			Console.WriteLine("Temps total Task: " + temps + " segons");
 			Console.ReadKey();
 		}
@@ -76,20 +82,25 @@ namespace UF2Practica1
 	#region ClassCaixera
 	public class Caixera
 	{
-		public int idCaixera
-		{
-			get;
-			set;
-		}
+		public int idCaixera { get; set; }
+
+        public Caixera(int id)
+        {
+            idCaixera = id + 1;
+        }
 
 		public void ProcessarCua()
 		{
-			// Llegirem la cua extreient l'element
-			// cridem al mètode ProcesarCompra passant-li el client
+            // Llegirem la cua extreient l'element
+            // cridem al mètode ProcesarCompra passant-li el client
 
+            Client client = null;
+            while(MainClass.cua.TryDequeue(out client))
+            {
+                ProcesarCompra(client);
+            }
 
-
-		}
+        }
 
 
 		private void ProcesarCompra(Client client)
@@ -120,19 +131,9 @@ namespace UF2Practica1
 
 	public class Client
 	{
-		public string nom
-		{
-			get;
-			set;
-		}
+		public string nom { get; set; }
 
-
-		public int carretCompra
-		{
-			get;
-			set;
-		}
-
+		public int carretCompra{ get; set; }
 
 	}
 

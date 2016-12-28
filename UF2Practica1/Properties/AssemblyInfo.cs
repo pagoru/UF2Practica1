@@ -24,3 +24,5 @@ using System.Runtime.CompilerServices;
 
 //[assembly: AssemblyDelaySign(false)]
 //[assembly: AssemblyKeyFile("")]
+
+//Pablo González Rubio - 28/12/2016
